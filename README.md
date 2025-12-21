@@ -63,8 +63,9 @@ O projeto é **100% client-side**, rodando inteiramente no navegador, sem backen
 
 5. Selecione:
 
-> Apenas o arquivo .txt (somente texto), ou
-> A pasta descompactada (para incluir imagens e vídeos).
+- Apenas o arquivo .txt (somente texto),
+ou
+- A pasta descompactada (para incluir imagens e vídeos).
 
 ## ⚠️ Aviso Legal
 
