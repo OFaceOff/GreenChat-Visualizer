@@ -2,134 +2,191 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GreenChat Visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="assets/styles/style.css">
 </head>
-<body class="h-screen w-screen overflow-hidden flex justify-center items-start md:items-center pt-0 md:pt-5">
+<body class="h-screen w-screen overflow-hidden flex justify-center items-center pt-0 md:pt-5 bg-[#d1d7db] dark:bg-[#090e11]" onclick="closeAllMenus()">
 
     <div class="green-accent-strip"></div>
+    <div id="mobileOverlay" class="mobile-overlay" onclick="closeAllMenus()"></div>
 
-    <div class="app-window bg-white w-full h-full md:w-[1400px] md:h-[96vh] flex overflow-hidden relative z-10 md:min-w-[900px]">
+    <div class="app-window w-full h-full flex overflow-hidden relative z-10">
 
-        <div id="sidebar" class="sidebar w-full md:w-[400px] lg:w-[450px] border-r border-[#e9edef] flex flex-col bg-white h-full shrink-0 transition-all z-20">
+        <div id="sidebar" class="sidebar w-full md:w-[400px] lg:w-[450px] border-r border-theme flex flex-col bg-sidebar h-full shrink-0 transition-all z-20 relative overflow-hidden">
             
-            <div class="bg-[#f0f2f5] px-4 py-2.5 flex justify-between items-center h-[59px] shrink-0 border-r border-[#d1d7db]">
-                <div class="font-bold text-[#00a884] text-lg tracking-tight select-none cursor-default">
-                    GreenChat Visualizer
+            <div id="statusDrawer" class="side-drawer">
+                <div class="bg-[#008069] h-[108px] p-5 flex items-end text-white">
+                    <button onclick="toggleDrawer('statusDrawer')" class="mr-4 mb-1"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <h1 class="text-xl font-medium">Status</h1>
                 </div>
-                
-                <div class="flex gap-2.5 items-center text-[#54656f]">
-                    <input type="file" id="fileInput" accept=".txt" class="hidden" onchange="handleFileUpload(event)">
-                    
-                    <button onclick="document.getElementById('fileInput').click()" 
-                            class="icon-btn" 
-                            title="Carregar arquivo .txt (Upload)">
-                        <i data-lucide="upload" class="w-[20px] h-[20px]"></i>
-                    </button>
-                    
-                    <button class="icon-btn hidden sm:block" title="Comunidades"><i data-lucide="users" class="w-[20px] h-[20px]"></i></button>
-                    <button class="icon-btn hidden sm:block" title="Status"><i data-lucide="circle-dashed" class="w-[20px] h-[20px]"></i></button>
-                    <button class="icon-btn" title="Novo Chat" onclick="alert('Carregue um arquivo .txt para iniciar um novo chat visual!')"><i data-lucide="message-square-plus" class="w-[20px] h-[20px]"></i></button>
-                    
-                    <div class="relative">
-                        <button class="icon-btn" title="Mais opções" onclick="toggleMenu()"><i data-lucide="more-vertical" class="w-[20px] h-[20px]"></i></button>
-                        <div id="mainMenu" class="hidden absolute right-0 top-10 bg-white shadow-lg rounded-md py-2 w-48 border border-gray-100 z-50">
-                            <button onclick="clearAllChats()" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600">Limpar todas as conversas</button>
+                <div class="flex-1 overflow-y-auto p-4 bg-sidebar">
+                    <div class="flex items-center gap-4 mb-4 cursor-pointer">
+                        <div class="relative w-10 h-10 rounded-full overflow-hidden bg-gray-300"><img src="https://i.pravatar.cc/150?img=68" class="w-full h-full object-cover"></div>
+                        <div><h3 class="text-primary font-medium">Meu status</h3><p class="text-secondary text-sm">Sem atualizações</p></div>
+                    </div>
+                    <div class="text-[#008069] text-xs font-medium uppercase mb-4 mt-6">Recentes</div>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 cursor-pointer" onclick="openImageModal('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTRpengyOGJvYmtpaXgyazZ1N3JraXQ5MXh5dHFkZTNyZDhnbWI2eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/IAaUnu2FV1MK9eEbaI/giphy.gif')">
+                            <div class="w-10 h-10 rounded-full border-2 border-[#00a884] p-0.5"><div class="w-full h-full rounded-full overflow-hidden"><img src="https://avatars.githubusercontent.com/u/61838299?v=4" class="w-full h-full object-cover"></div></div>
+                            <div><h3 class="text-primary font-medium">Dev Update</h3><p class="text-secondary text-xs">hoje às 15:30</p></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="px-3 py-2 border-b border-[#e9edef] bg-white h-[49px] flex items-center gap-2">
-                <div class="bg-[#f0f2f5] rounded-lg px-3 h-[35px] w-full flex items-center gap-4 transition-all focus-within:bg-white focus-within:shadow-sm focus-within:ring-1 focus-within:ring-[#00a884]">
-                    <i data-lucide="search" class="w-[18px] h-[18px] text-[#54656f] shrink-0"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar ou começar uma nova conversa" class="bg-transparent border-none outline-none text-[14px] w-full placeholder-[#54656f] text-[#3b4a54]">
+            <div id="communitiesDrawer" class="side-drawer">
+                <div class="bg-header px-4 py-3 flex items-center gap-4 border-b border-theme shrink-0">
+                    <button onclick="toggleDrawer('communitiesDrawer')" class="text-secondary"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <h1 class="text-xl text-primary font-medium">Comunidades</h1>
                 </div>
-                <button class="icon-btn" title="Filtro de conversas não lidas">
-                     <i data-lucide="list-filter" class="w-[20px] h-[20px] text-[#54656f]"></i>
-                </button>
+                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-sidebar">
+                    <div class="bg-gray-200 rounded-2xl w-full h-40 mb-6 flex items-center justify-center"><i data-lucide="users" class="w-16 h-16 text-gray-400"></i></div>
+                    <h2 class="text-xl text-primary font-medium mb-2">Conecte-se com sua comunidade</h2>
+                    <p class="text-secondary text-sm mb-6">As comunidades reúnem seus grupos em um só lugar.</p>
+                    <button class="bg-[#00a884] text-white px-6 py-2 rounded-full font-medium text-sm">Iniciar comunidade</button>
+                </div>
             </div>
 
-            <div id="contactList" class="flex-1 overflow-y-auto bg-white scrollbar-thin">
+            <div class="bg-header px-4 py-2.5 flex justify-between items-center shrink-0 border-r border-theme">
+                <div class="font-bold text-[#00a884] text-lg tracking-tight select-none cursor-default">GreenChat</div>
+                <div class="flex gap-2.5 items-center icon-theme">
+                    <input type="file" id="fileInput" accept=".txt" class="hidden" onchange="handleFileUpload(event)">
+                    <button onclick="document.getElementById('fileInput').click()" class="icon-btn" title="Importar .txt"><i data-lucide="upload" class="w-[20px] h-[20px]"></i></button>
+                    <button onclick="toggleDrawer('communitiesDrawer')" class="icon-btn hidden sm:block" title="Comunidades"><i data-lucide="users" class="w-[20px] h-[20px]"></i></button>
+                    <button onclick="toggleDrawer('statusDrawer')" class="icon-btn hidden sm:block" title="Status"><i data-lucide="circle-dashed" class="w-[20px] h-[20px]"></i></button>
+                    <button class="icon-btn" title="Criar Fake Chat" onclick="openCreateChatModal()"><i data-lucide="message-square-plus" class="w-[20px] h-[20px]"></i></button>
+                    <div class="relative">
+                        <button class="icon-btn" onclick="toggleMenu(event)"><i data-lucide="more-vertical" class="w-[20px] h-[20px]"></i></button>
+                        <div id="mainMenu" class="hidden absolute right-0 top-10 bg-sidebar shadow-lg rounded-md py-2 w-48 border border-theme z-50">
+                            <button onclick="openSettings()" class="w-full text-left px-4 py-3 hover:bg-[var(--hover-chat)] text-[var(--text-primary)] text-[14.5px]">Configurações</button>
+                            <button onclick="openHelpModal()" class="w-full text-left px-4 py-3 hover:bg-[var(--hover-chat)] text-[var(--text-primary)] text-[14.5px]">Ajuda</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="px-3 py-2 border-b border-theme bg-sidebar flex items-center gap-2 shrink-0">
+                <div class="bg-header rounded-lg px-3 h-[35px] w-full flex items-center gap-4 transition-all focus-within:bg-white dark:focus-within:bg-[var(--input-bg)] focus-within:shadow-sm">
+                    <i data-lucide="search" class="w-[18px] h-[18px] text-secondary shrink-0"></i>
+                    <input type="text" id="searchInput" placeholder="Pesquisar..." class="bg-transparent border-none outline-none text-[14px] w-full placeholder-[var(--text-secondary)] text-[var(--text-primary)]">
+                </div>
+                <button class="icon-btn" title="Filtrar não lidas" onclick="toggleUnreadFilter(this)"><i data-lucide="list-filter" class="w-[20px] h-[20px] text-secondary"></i></button>
+            </div>
+            <div id="contactList" class="flex-1 overflow-y-auto bg-sidebar scrollbar-thin"></div>
         </div>
 
-        <div id="chatArea" class="chat-area flex flex-col flex-1 bg-[#efeae2] h-full relative z-10">
+        <div id="chatArea" class="chat-area flex flex-col flex-1 bg-[#efeae2] h-full relative z-10" style="background-color: var(--app-bg)">
             
-            <div id="emptyState" class="hidden md:flex flex-col items-center justify-center h-full w-full bg-[#f0f2f5] border-b-[6px] border-[#25d366] text-center px-10 relative z-30">
+            <div id="emptyState" class="hidden md:flex flex-col items-center justify-center h-full w-full bg-header border-b-[6px] border-[#25d366] text-center px-10 relative z-30">
                 <div class="max-w-[560px] flex flex-col items-center">
                     <div class="mb-10 opacity-90 scale-110">
-                         <svg viewBox="0 0 240 240" width="240" height="200" class="text-[#e9edef] fill-current">
-                             <path fill="#f0f2f5" stroke="#d1d7db" stroke-width="2" d="M40,40 L200,40 L200,140 L40,140 Z" />
-                             <path fill="#ffffff" d="M50,50 L190,50 L190,130 L50,130 Z" />
-                             <rect x="30" y="140" width="180" height="10" rx="2" fill="#d1d7db" />
-                             <path fill="#ffffff" stroke="#d1d7db" stroke-width="2" d="M160,80 L210,80 C212,80 214,82 214,84 L214,166 C214,168 212,170 210,170 L160,170 C158,170 156,168 156,166 L156,84 C156,82 158,80 160,80 Z" />
+                         <svg viewBox="0 0 240 240" width="240" height="200" class="fill-current text-[#e9edef] dark:text-[#2a3942]">
+                             <path fill="currentColor" stroke="var(--border-color)" stroke-width="2" d="M40,40 L200,40 L200,140 L40,140 Z" />
+                             <path fill="var(--window-bg)" d="M50,50 L190,50 L190,130 L50,130 Z" />
+                             <rect x="30" y="140" width="180" height="10" rx="2" fill="var(--border-color)" />
+                             <path fill="var(--window-bg)" stroke="var(--border-color)" stroke-width="2" d="M160,80 L210,80 C212,80 214,82 214,84 L214,166 C214,168 212,170 210,170 L160,170 C158,170 156,168 156,166 L156,84 C156,82 158,80 160,80 Z" />
                              <circle cx="214" cy="80" r="10" fill="#25d366" />
-                             <path d="M211,80 L213,82 L217,78" stroke="white" stroke-width="2" fill="none"/>
                         </svg>
                     </div>
-                    <h1 class="text-[32px] font-light text-[#41525d] mb-4 mt-2">GreenChat Visualizer</h1>
-                    <p class="text-[#667781] text-[14px] leading-6 mb-8">
-                        Seus chats agora ficam salvos automaticamente neste navegador.<br>
-                        Importe arquivos de texto exportados e navegue pelas suas memórias.
-                    </p>
-                    <div class="flex items-center gap-2 text-[#8696a0] text-xs absolute bottom-10">
-                        <i data-lucide="lock" class="w-3 h-3"></i> Armazenamento local persistente
-                    </div>
+                    <h1 class="text-[32px] font-light text-[var(--text-primary)] mb-4 mt-2">GreenChat Visualizer</h1>
+                    <p class="text-[var(--text-secondary)] text-[14px] leading-6 mb-8">Visualize conversas e crie chats falsos.</p>
+                    <button onclick="document.getElementById('fileInput').click()" class="bg-[#00a884] hover:bg-[#008f6f] text-white font-medium py-2 px-6 rounded-full shadow-md transition-colors text-sm flex items-center gap-2 mb-8">Comece clicando aqui</button>
+                    <div class="flex items-center gap-2 text-[var(--text-secondary)] text-xs absolute bottom-10"><i data-lucide="lock" class="w-3 h-3"></i> Armazenamento local persistente</div>
                 </div>
             </div>
 
-            <div id="chatContent" class="hidden flex-col h-full w-full relative bg-transparent">
-                
-                <div class="bg-[#f0f2f5] px-4 py-2.5 flex justify-between items-center h-[59px] shrink-0 border-b border-[rgba(0,0,0,0.05)] z-20 w-full absolute top-0 left-0">
-                    <div class="flex items-center gap-3 overflow-hidden cursor-pointer">
-                        <button onclick="closeChat()" class="md:hidden text-[#54656f] mr-1">
-                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                        </button>
-                        
-                        <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
-                            <img id="headerAvatar" src="" alt="Avatar" class="w-full h-full object-cover">
-                        </div>
+            <div id="chatContent" class="hidden flex-col h-full w-full bg-transparent">
+                <div class="bg-header px-4 py-2 flex justify-between items-center shrink-0 border-b border-theme z-20 w-full">
+                    <div class="flex items-center gap-3 overflow-hidden cursor-pointer" onclick="openContactInfo()">
+                        <button onclick="closeChat(event)" class="md:hidden text-secondary mr-1"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                        <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0"><img id="headerAvatar" src="" class="w-full h-full object-cover"></div>
                         <div class="flex flex-col justify-center overflow-hidden">
-                            <span id="headerName" class="text-[#111b21] font-normal text-[16px] leading-tight truncate">Nome do Contato</span>
-                            <span id="headerInfo" class="text-[#667781] text-[13px] mt-0.5 truncate">dados do contato...</span>
+                            <span id="headerName" class="text-primary font-normal text-[16px] leading-tight truncate">Nome</span>
+                            <span id="headerInfo" class="text-secondary text-[13px] mt-0.5 truncate">dados...</span>
                         </div>
                     </div>
-                    <div class="flex gap-3 items-center text-[#54656f]">
-                        <button class="icon-btn"><i data-lucide="search" class="w-[20px] h-[20px]"></i></button>
-                        <button class="icon-btn"><i data-lucide="more-vertical" class="w-[20px] h-[20px]"></i></button>
+                    <div class="flex gap-3 items-center icon-theme relative">
+                        <div id="chatSearchBar" class="absolute right-0 top-1/2 -translate-y-1/2 bg-header border border-theme rounded-md flex items-center px-2 py-1 hidden shadow-lg" style="width: 250px;">
+                            <input type="text" class="bg-transparent outline-none text-sm w-full text-primary" placeholder="Buscar...">
+                            <button onclick="document.getElementById('chatSearchBar').classList.add('hidden')" class="ml-2"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                        <button class="icon-btn" onclick="document.getElementById('chatSearchBar').classList.remove('hidden')"><i data-lucide="search" class="w-[20px] h-[20px]"></i></button>
+                        <div class="relative">
+                            <button class="icon-btn" onclick="toggleDropdown(event, 'chatMenu')"><i data-lucide="more-vertical" class="w-[20px] h-[20px]"></i></button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="messagesContainer" class="chat-background flex-1 overflow-y-auto p-4 md:p-9 md:px-[8%] flex flex-col gap-1 pt-[70px] pb-[10px]">
-                </div>
-
-                <div class="bg-[#f0f2f5] px-4 py-2 flex items-center gap-3 min-h-[62px] shrink-0 z-20 border-t border-[rgba(0,0,0,0.05)]">
-                    <button class="icon-btn"><i data-lucide="smile" class="w-[24px] h-[24px] text-[#54656f]"></i></button>
-                    <button class="icon-btn"><i data-lucide="plus" class="w-[24px] h-[24px] text-[#54656f]"></i></button>
-                    
-                    <div class="flex-1 bg-white rounded-lg px-4 py-2.5 mx-2 shadow-sm border border-white focus-within:border-white">
-                        <input type="text" disabled placeholder="Somente leitura (arquivo importado)" class="w-full bg-transparent border-none outline-none text-[15px] text-[#3b4a54] placeholder:text-[#8696a0] cursor-not-allowed">
+                <div id="messagesContainer" class="chat-background flex-1 overflow-y-auto p-4 md:p-9 md:px-[8%] flex flex-col gap-1 pb-[10px]"></div>
+                
+                <div class="bg-header px-4 py-2 flex items-center gap-3 min-h-[62px] shrink-0 z-20 border-t border-theme relative" style="padding-bottom: max(8px, env(safe-area-inset-bottom));">
+                    <div id="emojiPicker" class="hidden absolute bottom-16 left-4 bg-sidebar border border-theme shadow-xl rounded-lg p-2 grid grid-cols-6 gap-2 w-64 h-48 overflow-y-auto popover-enter z-50"></div>
+                    <div id="attachMenu" class="hidden absolute bottom-16 left-14 bg-sidebar border border-theme shadow-xl rounded-lg flex flex-col w-40 popover-enter z-50 overflow-hidden py-2">
+                        <button class="flex items-center gap-3 px-4 py-2 hover:bg-[var(--hover-chat)] text-primary"><i data-lucide="file-text" class="w-5 h-5 text-indigo-500"></i> Documento</button>
+                        <button class="flex items-center gap-3 px-4 py-2 hover:bg-[var(--hover-chat)] text-primary"><i data-lucide="image" class="w-5 h-5 text-purple-500"></i> Fotos</button>
+                        <button class="flex items-center gap-3 px-4 py-2 hover:bg-[var(--hover-chat)] text-primary"><i data-lucide="camera" class="w-5 h-5 text-pink-500"></i> Câmera</button>
                     </div>
-                    
-                    <button class="icon-btn"><i data-lucide="mic" class="w-[24px] h-[24px] text-[#54656f]"></i></button>
+                    <button class="icon-btn hidden sm:block" onclick="toggleEmojiPicker()"><i data-lucide="smile" class="w-[24px] h-[24px]"></i></button>
+                    <button class="icon-btn" onclick="toggleAttachMenu()"><i data-lucide="plus" class="w-[24px] h-[24px]"></i></button>
+                    <div class="flex-1 flex items-center bg-[var(--input-bg)] rounded-lg px-2 py-2 mx-2 shadow-sm border border-transparent focus-within:border-white h-auto min-h-[42px]">
+                        <div id="senderToggle" class="sender-toggle sender-me hidden mr-2 shrink-0" onclick="toggleSender()" title="Trocar quem envia">Você</div>
+                        <input type="text" id="messageInput" disabled placeholder="Somente leitura" class="w-full bg-transparent border-none outline-none text-[15px] text-primary placeholder-[var(--text-secondary)] cursor-not-allowed h-full" onkeypress="handleInputKey(event)" oninput="updateSendIcon()">
+                    </div>
+                    <button class="icon-btn" onclick="sendMessage()"><i id="sendIcon" data-lucide="mic" class="w-[24px] h-[24px]"></i></button>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <div id="imageModal" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0" onclick="closeImageModal()">
-        <div class="absolute top-4 right-4 z-[110] cursor-pointer text-white/70 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors">
-            <i data-lucide="x" class="w-6 h-6"></i>
-        </div>
-        
-        <div class="absolute top-0 left-0 w-full h-16 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"></div>
+    <div id="globalContextMenu" class="hidden">
+        <button id="ctxPin" onclick="ctxAction('pin')">Fixar</button>
+        <button id="ctxRead" onclick="ctxAction('read')">Marcar como lida</button>
+        <button onclick="ctxAction('edit')">Dados do contato</button>
+        <button onclick="ctxAction('delete')">Apagar conversa</button>
+    </div>
 
-        <img id="modalImage" src="" alt="Full view" class="max-w-[95vw] max-h-[90vh] object-contain rounded-sm shadow-2xl scale-95 transition-transform duration-300 ease-out cursor-default" onclick="event.stopPropagation()">
+    <div id="globalChatMenu" class="hidden" style="min-width: 200px;">
+        <button onclick="openContactInfo()">Dados do contato</button>
+        <button>Silenciar notificações</button>
+        <button>Limpar mensagens</button>
+        <button onclick="deleteChatAction(null, activeChatId)">Apagar conversa</button>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 z-[70] bg-black/40 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200" onclick="closeSettings()">
+        <div class="bg-sidebar rounded-lg shadow-xl w-full max-w-md h-[80vh] md:h-auto overflow-hidden flex flex-col transform scale-95 transition-transform duration-200" id="settingsContent" onclick="event.stopPropagation()">
+            <div class="bg-header p-4 flex items-center gap-4 border-b border-theme shrink-0"><button onclick="closeSettings()" class="text-secondary hover:text-primary"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h2 class="text-xl text-primary font-medium">Configurações</h2></div><div class="p-4 overflow-y-auto flex-1"><div class="flex items-center gap-4 mb-6 p-2 hover:bg-[var(--hover-chat)] rounded cursor-pointer transition-colors"><div class="w-16 h-16 rounded-full overflow-hidden bg-gray-300"><img src="https://i.pravatar.cc/150?img=68" class="w-full h-full object-cover"></div><div><h3 class="text-lg text-primary">Você</h3><p class="text-sm text-secondary">Apenas visualizando</p></div></div><div class="border-t border-theme my-2"></div><div class="flex flex-col gap-1"><div class="flex items-center justify-between p-4 hover:bg-[var(--hover-chat)] rounded cursor-pointer" onclick="toggleTheme()"><div class="flex items-center gap-4 text-primary"><i data-lucide="moon" class="w-5 h-5 text-secondary"></i><span>Tema</span></div><span id="themeLabel" class="text-sm text-secondary">Claro</span></div><div class="flex items-center justify-between p-4 hover:bg-[var(--hover-chat)] rounded cursor-pointer text-red-500 hover:text-red-600" onclick="clearSiteCache()"><div class="flex items-center gap-4"><i data-lucide="eraser" class="w-5 h-5"></i><span>Apagar cache</span></div></div><div class="flex items-center justify-between p-4 hover:bg-[var(--hover-chat)] rounded cursor-pointer text-red-500 hover:text-red-600" onclick="clearAllChats()"><div class="flex items-center gap-4"><i data-lucide="trash-2" class="w-5 h-5"></i><span>Limpar tudo</span></div></div></div></div></div></div>
+    
+    <div id="helpModal" class="fixed inset-0 z-[75] bg-black/40 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200" onclick="closeHelpModal()"><div class="bg-sidebar rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 transition-transform duration-200 border border-theme" id="helpModalContent" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-6"><h2 class="text-xl text-primary font-medium">Ajuda</h2><button onclick="closeHelpModal()" class="text-secondary hover:text-primary"><i data-lucide="x" class="w-6 h-6"></i></button></div><div class="text-primary space-y-4 text-sm leading-relaxed overflow-y-auto max-h-[70vh]"><p class="font-medium text-lg text-[#00a884]">Olá! 👋 Bem-vindo ao GreenChat Visualizer.</p><p>Aqui você pode:</p><ul class="space-y-3 pl-2"><li class="flex gap-3"><span class="text-xl">📂</span> <span><strong>Carregar:</strong> Clique no ícone de upload para visualizar .txt do WhatsApp.</span></li><li class="flex gap-3"><span class="text-xl">➕</span> <span><strong>Criar Chats:</strong> Botão '+' para conversas falsas.</span></li><li class="flex gap-3"><span class="text-xl">✏️</span> <span><strong>Editar:</strong> Clique na foto/nome para mudar.</span></li><li class="flex gap-3"><span class="text-xl">📌</span> <span><strong>Organizar:</strong> Setinha ou Botão Direito no chat.</span></li></ul></div></div></div>
+    
+    <div id="createChatModal" class="fixed inset-0 z-[80] bg-black/40 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200" onclick="closeCreateChatModal()"><div class="bg-sidebar rounded-lg shadow-xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-200 border border-theme" id="createChatContent" onclick="event.stopPropagation()"><h2 class="text-xl text-primary font-medium mb-6">Criar Fake Chat</h2><div class="mb-4"><label class="block text-xs text-[#00a884] font-medium mb-1 uppercase tracking-wide">Nome do Contato</label><input type="text" id="newChatName" class="w-full py-2 px-3 border-2 border-[#e9edef] rounded-md outline-none focus:border-[#00a884] bg-transparent text-primary" placeholder="Ex: Amor..."></div><div class="flex justify-end gap-3 pt-2"><button onclick="closeCreateChatModal()" class="px-4 py-2 text-[#00a884] hover:bg-[var(--hover-chat)] rounded text-sm font-medium">Cancelar</button><button onclick="confirmCreateChat()" class="px-5 py-2 bg-[#00a884] text-white rounded hover:bg-[#008f6f] shadow-sm text-sm font-medium">Criar</button></div></div></div>
+    
+    <div id="imageModal" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0" onclick="closeImageModal()">
+        <div class="absolute top-4 right-4 z-[110] cursor-pointer text-white/70 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></div>
+        <img id="modalImage" src="" class="max-w-[95vw] max-h-[90vh] object-contain rounded-sm shadow-2xl scale-95 transition-transform duration-300 ease-out cursor-default" onclick="event.stopPropagation()">
+    </div>
+    
+    <div id="editContactModal" class="fixed inset-0 z-[60] bg-black/40 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200" onclick="closeEditModal()">
+        <div class="bg-sidebar rounded-lg shadow-xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-200 border border-theme" id="editModalContent" onclick="event.stopPropagation()">
+            <h2 class="text-xl text-primary font-medium mb-6">Dados do contato</h2>
+            <div class="flex flex-col items-center mb-6">
+                <div class="relative w-32 h-32 group">
+                    <div class="w-32 h-32 rounded-full overflow-hidden mb-3 bg-gray-200 ring-2 ring-offset-2 ring-[#00a884]/20 shadow-md"><img id="editAvatarPreview" src="" class="w-full h-full object-cover"></div>
+                    <div id="avatarUploadOverlay" class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity mb-3" onclick="document.getElementById('editAvatarFileInput').click()"><div class="flex flex-col items-center text-white"><i data-lucide="camera" class="w-8 h-8 mb-1"></i><span class="text-xs uppercase font-medium tracking-wider">Mudar</span></div></div>
+                </div>
+                <input type="file" id="editAvatarFileInput" class="hidden" accept="image/*" onchange="handleAvatarFileSelected(event)"><input type="text" id="editAvatarInput" placeholder="URL" class="w-full text-xs bg-transparent border-b border-theme py-1 outline-none text-primary text-center mt-2 focus:border-[#00a884]" oninput="document.getElementById('editAvatarPreview').src = this.value || 'https://ui-avatars.com/api/?name=?&background=random'">
+            </div>
+            <div class="mb-8">
+                <label class="block text-xs text-[#00a884] font-medium mb-1 uppercase tracking-wide">Nome</label>
+                <div class="flex items-center border-b-2 border-theme focus-within:border-[#00a884] transition-colors pb-1"><input type="text" id="editNameInput" class="w-full py-1 outline-none text-primary text-base bg-transparent" placeholder="Nome do contato"><i data-lucide="pen-line" class="w-4 h-4 text-secondary"></i></div>
+                <p id="editNameWarning" class="text-xs text-red-500 mt-2 hidden flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Este usuário não pode ser alterado</p>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeEditModal()" class="px-4 py-2 text-[#00a884] hover:bg-[var(--hover-chat)] rounded text-sm font-medium transition-colors">Cancelar</button>
+                <button onclick="saveContactEdits()" class="px-5 py-2 bg-[#00a884] text-white rounded hover:bg-[#008f6f] shadow-sm text-sm font-medium transition-colors">Salvar</button>
+            </div>
+        </div>
     </div>
 
     <script src="assets/scripts/script.js"></script>
