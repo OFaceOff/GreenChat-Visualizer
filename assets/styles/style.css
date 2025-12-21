@@ -45,14 +45,14 @@ body {
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.3s;
     overflow: hidden;
-    user-select: none; 
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .green-accent-strip {
     position: fixed; top: 0; left: 0; width: 100%; height: 127px;
     background-color: var(--accent); z-index: -1; transition: background-color 0.3s;
 }
-
 body.dark-mode .green-accent-strip { background-color: var(--header-bg); }
 
 ::-webkit-scrollbar { width: 5px !important; height: 5px !important; }
@@ -81,12 +81,10 @@ body.dark-mode .green-accent-strip { background-color: var(--header-bg); }
     background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
     background-repeat: repeat; opacity: 1; transition: background-color 0.3s;
 }
-
 .chat-background::after {
     content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     background-color: var(--chat-bg); opacity: 0.6; pointer-events: none;
 }
-
 body.dark-mode .chat-background::after { opacity: 0.95; }
 #messagesContainer > * { position: relative; z-index: 10; }
 
@@ -96,14 +94,22 @@ body.dark-mode .chat-background::after { opacity: 0.95; }
     font-size: 14.2px; line-height: 19px; color: var(--text-primary); word-wrap: break-word; user-select: text;
 }
 
-.message-bubble img {
-    border-radius: 6px; margin-bottom: 2px; max-height: 300px;
+.message-bubble img:not(.sticker) {
+    border-radius: 6px; margin-bottom: 2px; max-height: 300px; max-width: 100%;
     object-fit: cover; cursor: pointer; transition: opacity 0.2s;
 }
-
 .message-bubble img:hover { opacity: 0.95; }
 
-@media (max-width: 768px) { .message-bubble { max-width: 85%; } }
+.message-bubble img.sticker {
+    max-width: 150px; max-height: 150px; background: transparent; padding: 0; margin: 0;
+}
+
+.message-bubble.has-sticker {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+.message-bubble.has-sticker::before { display: none; }
 
 .message-in { background-color: var(--message-in); border-top-left-radius: 0; margin-right: auto; }
 .message-out { background-color: var(--message-out); border-top-right-radius: 0; margin-left: auto; }
@@ -112,7 +118,6 @@ body.dark-mode .chat-background::after { opacity: 0.95; }
     content: ""; position: absolute; top: 0; left: -8px; width: 0; height: 0;
     border: 8px solid transparent; border-top-color: var(--message-in); border-right-color: var(--message-in); border-bottom: 0;
 }
-
 .message-out::before {
     content: ""; position: absolute; top: 0; right: -8px; width: 0; height: 0;
     border: 8px solid transparent; border-top-color: var(--message-out); border-left-color: var(--message-out); border-bottom: 0;
@@ -130,7 +135,6 @@ body.dark-mode .chat-background::after { opacity: 0.95; }
     position: relative; 
     cursor: pointer;
 }
-
 .chat-item:hover { background-color: var(--hover-chat); }
 .chat-item.active { background-color: var(--active-chat); }
 
@@ -164,29 +168,27 @@ body.dark-mode .chat-background::after { opacity: 0.95; }
     margin-right: 5px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
-
 .sender-me { background-color: #00a884; color: white; border: 2px solid transparent; }
 .sender-them { background-color: white; color: #54656f; border: 2px solid #e9edef; }
 
-#globalContextMenu {
+#globalContextMenu, #uploadMenu {
     position: fixed; 
     background-color: var(--window-bg);
     border-radius: 6px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26), 0 2px 10px 0 rgba(0,0,0,0.16);
     z-index: 9999;
-    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
     padding: 4px 0;
     display: none;
     border: 1px solid var(--border-color);
 }
-
-#globalContextMenu button {
+#globalContextMenu button, #uploadMenu button {
     width: 100%; text-align: left; padding: 10px 20px;
     color: var(--text-primary); font-size: 14.5px;
     transition: background-color 0.1s;
 }
-
-#globalContextMenu button:hover { background-color: var(--hover-chat); }
+#globalContextMenu button:hover, #uploadMenu button:hover { background-color: var(--hover-chat); }
 
 .side-drawer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -194,21 +196,30 @@ body.dark-mode .chat-background::after { opacity: 0.95; }
     transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.1, 0.82, 0.25, 1);
     display: flex; flex-direction: column;
 }
-
 .side-drawer.open { transform: translateX(0); }
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%;
+    border-left-color: #00a884; animation: spin 1s ease infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 @media (max-width: 768px) {
     .green-accent-strip { display: none; }
-    .app-window { width: 100vw; height: 100vh; top: 0; margin: 0; position: fixed; border-radius: 0; }
+    .app-window { 
+        width: 100vw; height: 100dvh;
+        top: 0; margin: 0; position: fixed; border-radius: 0;
+        display: flex; flex-direction: column;
+    }
     body { padding: 0 !important; }
-    .sidebar { width: 100%; display: flex; height: 100vh; }
-    .chat-area { width: 100%; display: none; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50; }
+    .sidebar { width: 100%; display: flex; height: 100%; }
+    .chat-area { width: 100%; display: none; position: fixed; top: 0; left: 0; height: 100dvh; z-index: 50; }
     
-    #globalContextMenu.mobile-sheet {
+    #globalContextMenu.mobile-sheet, #uploadMenu.mobile-sheet {
         position: fixed !important; top: auto !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
         width: 100% !important; border-radius: 16px 16px 0 0 !important; transform: translateY(0);
         animation: slideUp 0.2s ease-out; border: none; box-shadow: 0 -4px 25px rgba(0,0,0,0.3);
-        padding-bottom: 20px;
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
     .mobile-overlay {
         display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
